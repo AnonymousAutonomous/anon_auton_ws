@@ -1,0 +1,8 @@
+prefix=/home/anonymous3/anon_auton_ws/install
+
+Name: simple_motors
+Description: Description of simple_motors
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/anonymous3/anon_auton_ws/install/lib 
+Requires: 

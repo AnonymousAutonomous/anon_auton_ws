@@ -1,0 +1,2 @@
+cv_camera:eyes:laser_filters:mylidar:obstacle_detector:ping_arduino:rplidar_ros:simple_motors
+-DCATKIN_DEVEL_PREFIX=/home/anonymous3/anon_auton_ws/devel -DCMAKE_INSTALL_PREFIX=/home/anonymous3/anon_auton_ws/install -G Unix Makefiles

@@ -1,0 +1,8 @@
+prefix=/home/anonymous3/anon_auton_ws/devel
+
+Name: ping_arduino
+Description: Description of ping_arduino
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/anonymous3/anon_auton_ws/devel/lib 
+Requires: 

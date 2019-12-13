@@ -1,0 +1,8 @@
+prefix=/home/anonymous3/anon_auton_ws/install
+
+Name: eyes
+Description: Description of eyes
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/anonymous3/anon_auton_ws/install/lib 
+Requires: 
