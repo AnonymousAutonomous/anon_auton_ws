@@ -230,22 +230,22 @@ void chatterCallBack(const sensor_msgs::Image& view)
 
     std::string d;
     // TODO: comment out when ready to send to queue
-    // /*
+    // 
     d = "Top: "; 
     d += std::to_string(topAverage);
     d += " Left: "; 
     d += std::to_string(leftAverage);
     d += " Right: "; 
     d += std::to_string(rightAverage);
-    d += "\nThreshold: "; 
+    d += " Middle: "; 
+    d += std::to_string(middleAverage);
+	d += "\nThreshold: "; 
     d += std::to_string(threshold);
     d += " Top Threshold: "; 
     d += std::to_string(top_percent_threshold);
     d += " Side Threshold: "; 
     d += std::to_string(side_percent_threshold);
 
-    //*/
-   
 
     std_msgs::String stuff;
     stuff.data = result;
