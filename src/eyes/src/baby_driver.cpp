@@ -12,6 +12,7 @@ const int max_elapsed = 11;
 bool in_bwd = false;
 bool in_pivot = false;
 char pivot_direction = 'r';
+std::string pivot_command = PIVOTR;
 
 ros::Publisher chairles;
 void chatterCallBackCamera(const std_msgs::String& commands); 
@@ -20,46 +21,27 @@ std::pair<std_msgs::String, std_msgs::String> jimothy;
 
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "baby_driver");
+    ros::init(argc, argv, "baby_driver");
 
-	ros::NodeHandle bill; //subscriber
-	ros::NodeHandle ted; //publisher
+    ros::NodeHandle bill; //subscriber
+    ros::NodeHandle ted; //publisher
 
-	ros::Subscriber Stick = bill.subscribe("cameron", 1000, chatterCallBackCamera);
-	ros::Subscriber Rope = bill.subscribe("larry", 1000, chatterCallBackLidar);
-	chairles = ted.advertise<std_msgs::String>("timmy" , 1000);
-	ros::spin();
+    ros::Subscriber Stick = bill.subscribe("cameron", 1000, chatterCallBackCamera);
+    ros::Subscriber Rope = bill.subscribe("larry", 1000, chatterCallBackLidar);
+    chairles = ted.advertise<std_msgs::String>("timmy" , 1000);
+    ros::spin();
 }
 
+void handleCommand(const std_msgs::String& command, std::stringstream& ss) {
+    //std::stringstream ss;
 
-void chatterCallBackCamera(const std_msgs::String& commands)
-{
-	jimothy.second = commands;
-	/*
-	if(jimothy.first.data == "s")
-	{
-		chairles.publish(jimothy.first);
-	}
-	else if (jimothy.second.data != "")
-	{
-		chairles.publish(jimothy.second);
-	}
-	else
-	{
-		chairles.publish(jimothy.first);
-	}
-	*/
-	std::stringstream ss;
-	//ss << "< " << jimothy.first.data << " | " << jimothy.second.data << " >";
-	if (jimothy.first.data.length() < 2 && jimothy.second.data.length() < 2) ss /*<< " COMMAND: "*/ << "NULL";
-	else if (jimothy.first.data.length() < 2) {
-        if (jimothy.second.data[1] == 'A') {
-            // stop! reset in bwd
+    if (command[1] == 'A') {
+            // stop! reset in_bwd
             in_bwd = false;
             in_pivot = false;
             counter = 0;
 
-            ss /*<< " COMMAND: "*/ << jimothy.second.data;
+            ss << command;
         }
         else {
             // in the process of moving backward
@@ -80,11 +62,12 @@ void chatterCallBackCamera(const std_msgs::String& commands)
             }
             if (in_pivot) {
                 counter++;
-                if (pivot_direction == 'r') {
-                        ss << PIVOTR;
-                    } else {
-                        ss << PIVOTL;
-                    }
+                ss << pivot_command;
+                // if (pivot_direction == 'r') {
+                //         ss << PIVOTR;
+                //     } else {
+                //         ss << PIVOTL;
+                //     }
                 if (counter > (3 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
@@ -93,467 +76,81 @@ void chatterCallBackCamera(const std_msgs::String& commands)
             }
             if (!(in_bwd || in_pivot)) {
                     // if pivot command - back up and then pivot
-                if (jimothy.second.data[6] != jimothy.second.data[10]) {
+                if (command[6] != command[10]) {
                       in_bwd = true;
                       ss << BWD;     
-                      if (jimothy.second.data[6] == 'f') {
-                            pivot_direction = 'r';
-                      }
-                      else {
-                            pivot_direction = 'l';
-                      } 
+                      pivot_command = command;
+                      // if (command[6] == 'f') {
+                      //       pivot_direction = 'r';
+                      // }
+                      // else {
+                      //       pivot_direction = 'l';
+                      // } 
                 }
 
                 else {
-                    ss /*<< " COMMAND: "*/ << jimothy.second.data;
-                }
-
-            }
-            
-        }
-        
-    }
-	else if (jimothy.second.data.length() < 2) {
-        if (jimothy.first.data[1] == 'A') {
-            // stop! reset in bwd
-            in_bwd = false;
-            counter = 0;
-
-            ss /*<< " COMMAND: "*/ << jimothy.first.data;
-        }
-        else {
-            // in the process of moving backward
-            if (in_bwd) {
-                counter++; 
-                
-                // transition to pivot
-                if (counter > max_elapsed) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = true;
-                }
-                
-                // continue moving backward
-                else {
-                    ss << BWD;
-                }
-            }
-            if (in_pivot) {
-                counter++;
-                if (pivot_direction == 'r') {
-                        ss << PIVOTR;
-                    } else {
-                        ss << PIVOTL;
-                    }
-                if (counter > (max_elapsed * 3)) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = false;
-                }
-            }
-            if (!(in_bwd || in_pivot)) {
-                    // if pivot command - back up and then pivot
-                if (jimothy.first.data[6] != jimothy.first.data[10]) {
-                      in_bwd = true;
-                      ss << BWD;     
-                      if (jimothy.first.data[6] == 'f') {
-                            pivot_direction = 'r';
-                      } else {
-                            pivot_direction = 'l';
-                      } 
-                }
-                else {
-                    ss /*<< " COMMAND: "*/ << jimothy.first.data;
+                    ss << command;
                 }
 
             }
             
         }
 
+    return ss;
+    
+}
 
+void chatterCallBackCamera(const std_msgs::String& commands)
+{
+    jimothy.second = commands;
+    std::stringstream ss;
 
-	} else if (jimothy.first.data[1] < jimothy.second.data[1]) {
-        if (jimothy.first.data[1] == 'A') {
-            // stop! reset in bwd
-            in_bwd = false;
-            counter = 0;
-
-            ss /*<< " COMMAND: "*/ << jimothy.first.data;
-        }
-        else {
-            // in the process of moving backward
-            if (in_bwd) {
-                counter++; 
-                
-                // transition to pivot
-                if (counter > max_elapsed) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = true;
-                }
-                
-                // continue moving backward
-                else {
-                    ss << BWD;
-                }
-            }
-            if (in_pivot) {
-                counter++;
-                if (pivot_direction == 'r') {
-                        ss << PIVOTR;
-                    } else {
-                        ss << PIVOTL;
-                    }
-                if (counter > (3 * max_elapsed)) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = false;
-                }
-            }
-            if (!(in_bwd || in_pivot)) {
-                    // if pivot command - back up and then pivot
-                if (jimothy.first.data[6] != jimothy.first.data[10]) {
-                      in_bwd = true;
-                      ss << BWD;     
-                      if (jimothy.first.data[6] == 'f') {
-                            pivot_direction = 'r';
-                      } else {
-                            pivot_direction = 'l';
-                      } 
-                }
-
-                else {
-                    ss /*<< " COMMAND: "*/ << jimothy.first.data;
-                }
-
-            }
-            
-        }
-        
-        
-    }
-	else {
-        if (jimothy.second.data[1] == 'A') {
-            // stop! reset in bwd
-            in_bwd = false;
-            counter = 0;
-
-            ss /*<< " COMMAND: "*/ << jimothy.second.data;
-        }
-        else {
-            // in the process of moving backward
-            if (in_bwd) {
-                counter++; 
-                
-                // transition to pivot
-                if (counter > max_elapsed) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = true;
-                }
-                
-                // continue moving backward
-                else {
-                    ss << BWD;
-                }
-            }
-            if (in_pivot) {
-                counter++;
-                if (pivot_direction == 'r') {
-                        ss << PIVOTR;
-                    } else {
-                        ss << PIVOTL;
-                    }
-                if (counter > (3 * max_elapsed)) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = false;
-                }
-            }
-            if (!(in_bwd || in_pivot)) {
-                    // if pivot command - back up and then pivot
-                if (jimothy.second.data[6] != jimothy.second.data[10]) {
-                      in_bwd = true;
-                      ss << BWD;     
-                      if (jimothy.second.data[6] == 'f') {
-                            pivot_direction = 'r';
-                      } else {
-                            pivot_direction = 'l';
-                      } 
-                }
-
-                else {
-                    ss /*<< " COMMAND: "*/ << jimothy.second.data;
-                }
-
-            }
-            
-        }
+    if (jimothy.first.data.length() < 2 && jimothy.second.data.length() < 2){
+        ss << "NULL";
+    // second data only
+    } else if (jimothy.first.data.length() < 2) { // data only in second
+        handleCommand(jimothy.second.data);
+    // first data only
+    } else if (jimothy.second.data.length() < 2) {
+        handleCommand(jimothy.first.data);
+    // first data takes priority
+    } else if (jimothy.first.data[1] < jimothy.second.data[1]) {
+        handleCommand(jimothy.first.data);
+    // second data takes priority
+    } else {
+        handleCommand(jimothy.second.data);
     }
 
-	std_msgs::String msg;
-	msg.data = ss.str();
-	chairles.publish(msg);
+    // DEBUG TODO FIXME: DELETE
+    cout << ss.str();
+
+    std_msgs::String msg;
+    msg.data = ss.str();
+    chairles.publish(msg);
 }
 
 void chatterCallBackLidar(const std_msgs::String& commands)
 {
-	jimothy.first = commands;
-	/*
-	if(jimothy.first.data == "s")
-	{
-		chairles.publish(jimothy.first);
-	}
-	else if (jimothy.second.data != "")
-	{
-		chairles.publish(jimothy.second);
-	}
-	else
-	{
-		chairles.publish(jimothy.first);
-	}
-	*/
-        std::stringstream ss;
-	//ss << "< " << jimothy.first.data << " | " << jimothy.second.data << " >";
-	if (jimothy.first.data.length() < 2 && jimothy.second.data.length() < 2) ss /*<< " COMMAND: "*/ << "cQstomf050f050";
-	else if (jimothy.first.data.length() < 2) {
-        if (jimothy.second.data[1] == 'A') {
-            // stop! reset in bwd
-            in_bwd = false;
-            counter = 0;
+    jimothy.first = commands;
 
-            ss /*<< " COMMAND: "*/ << jimothy.second.data;
-        }
-        else {
-            // in the process of moving backward
-            if (in_bwd) {
-                counter++; 
-                
-                // transition to pivot
-                if (counter > max_elapsed) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = true;
-                }
-                
-                // continue moving backward
-                else {
-                    ss << BWD;
-                }
-            }
-            if (in_pivot) {
-                counter++;
-                if (pivot_direction == 'r') {
-                        ss << PIVOTR;
-                    } else {
-                        ss << PIVOTL;
-                    }
-                if (counter > (3 * max_elapsed)) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = false;
-                }
-            }
-            if (!(in_bwd || in_pivot)) {
-                    // if pivot command - back up and then pivot
-                if (jimothy.second.data[6] != jimothy.second.data[10]) {
-                      in_bwd = true;
-                      ss << BWD;     
-                      if (jimothy.second.data[6] == 'f') {
-                            pivot_direction = 'r';
-                      } else {
-                            pivot_direction = 'l';
-                      } 
-                }
-
-                else {
-                    ss /*<< " COMMAND: "*/ << jimothy.second.data;
-                }
-
-            }
-            
-        }
-        
-    }
-	else if (jimothy.second.data.length() < 2) {
-        if (jimothy.first.data[1] == 'A') {
-            // stop! reset in bwd
-            in_bwd = false;
-            counter = 0;
-
-            ss /*<< " COMMAND: "*/ << jimothy.first.data;
-        }
-        else {
-            // in the process of moving backward
-            if (in_bwd) {
-                counter++; 
-                
-                // transition to pivot
-                if (counter > max_elapsed) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = true;
-                }
-                
-                // continue moving backward
-                else {
-                    ss << BWD;
-                }
-            }
-            if (in_pivot) {
-                counter++;
-                if (pivot_direction == 'r') {
-                        ss << PIVOTR;
-                    } else {
-                        ss << PIVOTL;
-                    }
-                if (counter > (3 * max_elapsed)) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = false;
-                }
-            }
-            if (!(in_bwd || in_pivot)) {
-                    // if pivot command - back up and then pivot
-                if (jimothy.first.data[6] != jimothy.first.data[10]) {
-                      in_bwd = true;
-                      ss << BWD;     
-                      if (jimothy.first.data[6] == 'f') {
-                            pivot_direction = 'r';
-                      } else {
-                            pivot_direction = 'l';
-                      } 
-                }
-                else {
-                    ss /*<< " COMMAND: "*/ << jimothy.first.data;
-                }
-
-            }
-            
-        }
-
-
-
-	} else if (jimothy.first.data[1] < jimothy.second.data[1]) {
-        if (jimothy.first.data[1] == 'A') {
-            // stop! reset in bwd
-            in_bwd = false;
-            counter = 0;
-
-            ss /*<< " COMMAND: "*/ << jimothy.first.data;
-        }
-        else {
-            // in the process of moving backward
-            if (in_bwd) {
-                counter++; 
-                
-                // transition to pivot
-                if (counter > max_elapsed) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = true;
-                }
-                
-                // continue moving backward
-                else {
-                    ss << BWD;
-                }
-            }
-            if (in_pivot) {
-                counter++;
-                if (pivot_direction == 'r') {
-                        ss << PIVOTR;
-                    } else {
-                        ss << PIVOTL;
-                    }
-                if (counter > (3 * max_elapsed)) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = false;
-                }
-            }
-            if (!(in_bwd || in_pivot)) {
-                    // if pivot command - back up and then pivot
-                if (jimothy.first.data[6] != jimothy.first.data[10]) {
-                      in_bwd = true;
-                      ss << BWD;     
-                      if (jimothy.first.data[6] == 'f') {
-                            pivot_direction = 'r';
-                      } else {
-                            pivot_direction = 'l';
-                      } 
-                }
-
-                else {
-                    ss /*<< " COMMAND: "*/ << jimothy.first.data;
-                }
-
-            }
-            
-        }
-        
-        
-    }
-	else {
-        if (jimothy.second.data[1] == 'A') {
-            // stop! reset in bwd
-            in_bwd = false;
-            counter = 0;
-
-            ss /*<< " COMMAND: "*/ << jimothy.second.data;
-        }
-        else {
-            // in the process of moving backward
-            if (in_bwd) {
-                counter++; 
-                
-                // transition to pivot
-                if (counter > max_elapsed) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = true;
-                }
-                
-                // continue moving backward
-                else {
-                    ss << BWD;
-                }
-            }
-            if (in_pivot) {
-                counter++;
-                if (pivot_direction == 'r') {
-                        ss << PIVOTR;
-                    } else {
-                        ss << PIVOTL;
-                    }
-                if (counter > (3 * max_elapsed)) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = false;
-                }
-            }
-            if (!(in_bwd || in_pivot)) {
-                    // if pivot command - back up and then pivot
-                if (jimothy.second.data[6] != jimothy.second.data[10]) {
-                      in_bwd = true;
-                      ss << BWD;     
-                      if (jimothy.second.data[6] == 'f') {
-                            pivot_direction = 'r';
-                      } else {
-                            pivot_direction = 'l';
-                      } 
-                }
-
-                else {
-                    ss /*<< " COMMAND: "*/ << jimothy.second.data;
-                }
-
-            }
-            
-        }
+    std::stringstream ss;
+    
+    if (jimothy.first.data.length() < 2 && jimothy.second.data.length() < 2) {
+        ss << "cQstomf050f050";
+    } else if (jimothy.first.data.length() < 2) {
+        handleCommand(jimothy.second.data);
+    } else if (jimothy.second.data.length() < 2) {
+        handleCommand(jimothy.first.data);
+    } else if (jimothy.first.data[1] < jimothy.second.data[1]) {
+        handleCommand(jimothy.first.data);
+    } else {
+        handleCommand(jimothy.second.data);
     }
 
-	std_msgs::String msg;
-	msg.data = ss.str();
-	chairles.publish(msg);
+    // DEBUG TODO FIXME: DELETE
+    cout << ss.str();
+
+    std_msgs::String msg;
+    msg.data = ss.str();
+    chairles.publish(msg);
 }
