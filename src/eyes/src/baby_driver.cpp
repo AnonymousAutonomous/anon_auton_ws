@@ -35,13 +35,13 @@ int main(int argc, char** argv)
 void handleCommand(std_msgs::String& command, std::stringstream& ss) {
     //std::stringstream ss;
 
-    if (command[1] == 'A') {
+    if (command.data[1] == 'A') {
             // stop! reset in_bwd
             in_bwd = false;
             in_pivot = false;
             counter = 0;
 
-            ss << command;
+            ss << command.data;
         }
         else {
             // in the process of moving backward
@@ -76,10 +76,10 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
             }
             if (!(in_bwd || in_pivot)) {
                     // if pivot command - back up and then pivot
-                if (command[6] != command[10]) {
+                if (command.data[6] != command.data[10]) {
                       in_bwd = true;
                       ss << BWD;     
-                      pivot_command = command;
+                      pivot_command = command.data;
                       // if (command[6] == 'f') {
                       //       pivot_direction = 'r';
                       // }
@@ -89,7 +89,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 }
 
                 else {
-                    ss << command;
+                    ss << command.data;
                 }
 
             }
@@ -106,16 +106,16 @@ void chatterCallBackCamera(const std_msgs::String& commands)
         ss << "NULL";
     // second data only
     } else if (jimothy.first.data.length() < 2) { // data only in second
-        handleCommand(std_msgs::String(jimothy.second.data), ss);
+        handleCommand(jimothy.second, ss);
     // first data only
     } else if (jimothy.second.data.length() < 2) {
-        handleCommand(std_msgs::String(jimothy.first.data), ss);
+        handleCommand(jimothy.first, ss);
     // first data takes priority
     } else if (jimothy.first.data[1] < jimothy.second.data[1]) {
-        handleCommand(std_msgs::String(jimothy.first.data), ss);
+        handleCommand(jimothy.first, ss);
     // second data takes priority
     } else {
-        handleCommand(std_msgs::String(jimothy.second.data), ss);
+        handleCommand(jimothy.second, ss);
     }
 
     std_msgs::String msg;
@@ -132,13 +132,13 @@ void chatterCallBackLidar(const std_msgs::String& commands)
     if (jimothy.first.data.length() < 2 && jimothy.second.data.length() < 2) {
         ss << "cQstomf050f050";
     } else if (jimothy.first.data.length() < 2) {
-        handleCommand(std_msgs::String(jimothy.second.data), ss);
+        handleCommand(jimothy.second, ss);
     } else if (jimothy.second.data.length() < 2) {
-        handleCommand(std_msgs::String(jimothy.first.data), ss);
+        handleCommand(jimothy.first, ss);
     } else if (jimothy.first.data[1] < jimothy.second.data[1]) {
-        handleCommand(std_msgs::String(jimothy.first.data), ss);
+        handleCommand(jimothy.first, ss);
     } else {
-        handleCommand(std_msgs::String(jimothy.second.data), ss);
+        handleCommand(jimothy.second, ss);
     }
 
     std_msgs::String msg;
