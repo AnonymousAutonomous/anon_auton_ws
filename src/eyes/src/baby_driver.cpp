@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     ros::spin();
 }
 
-void handleCommand(const std_msgs::String& command, std::stringstream& ss) {
+void handleCommand(std_msgs::String& command, std::stringstream& ss) {
     //std::stringstream ss;
 
     if (command[1] == 'A') {
