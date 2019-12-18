@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono> 
 #include <future>
+#include <cstdlib>
 
 #include "ros/ros.h"
 #include "sensor_msgs/Image.h"
@@ -22,6 +23,9 @@ const std::string SLIGHTR       = "cBstomf070f050";
 const std::string SLIGHTL       = "cBstomf050f070";
 const std::string GO            = "cDstomf055f055";
 
+uint8[640 * 480] old_data; // TODO FIXME: switch to imagewidth * imageheight and make those const?
+
+bool data_read = false;
 
 
 bool inTop(int counter);
@@ -37,6 +41,8 @@ double side_percent_threshold = 0.20;
 double top_percent_threshold = 0.20;
 bool favorRight = false; 
 double num_middle_pixels = 100800;
+
+const int not_stuck_threshold = 500; 
 
 void chatterCallBack(const sensor_msgs::Image& view);
 
@@ -122,7 +128,9 @@ void chatterCallBack(const sensor_msgs::Image& view)
     
     imageWidth = view.width;
     imageHeight = view.height;
-    
+
+    int running_pixel_differences = 0;
+
     for(int i = 0; i < view.data.size(); i++) //grab top
     {
     //std::string command = "i: " + std::to_string(i);
@@ -145,6 +153,8 @@ void chatterCallBack(const sensor_msgs::Image& view)
         if (inMiddle(i)) {
             middleCount += (view.data[i] > threshold);
         }
+
+        running_pixel_differences += std::abs(view.data[i] = old_data[i]);
         //command += "\n";
         //std_msgs::String stuff;
         //stuff.data = command;
@@ -246,6 +256,10 @@ void chatterCallBack(const sensor_msgs::Image& view)
     d += " Side Threshold: "; 
     d += std::to_string(side_percent_threshold);
 
+    if (running_pixel_differences < not_stuck_threshold) {
+        result[2] = 'O'; // O for old image // TODO FIXME : add to the consts file
+    }
+
 
     std_msgs::String stuff;
     stuff.data = result;
@@ -254,6 +268,9 @@ void chatterCallBack(const sensor_msgs::Image& view)
     std_msgs::String other;
     other.data = d;
     debug.publish(other);
+
+    old_data = view.data;
+    data_read = true; // now compare values after the first frame 
 
 }
 
