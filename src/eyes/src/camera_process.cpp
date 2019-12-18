@@ -155,6 +155,8 @@ void chatterCallBack(const sensor_msgs::Image& view)
         }
 
         running_pixel_differences += std::abs(view.data[i] = old_data[i]);
+        // swap!
+        old_data[i] = view.data[i];
         //command += "\n";
         //std_msgs::String stuff;
         //stuff.data = command;
@@ -273,7 +275,6 @@ void chatterCallBack(const sensor_msgs::Image& view)
     other.data = d;
     debug.publish(other);
 
-    old_data = view.data;
     data_read = true; // now compare values after the first frame 
 
 }
