@@ -154,7 +154,7 @@ void chatterCallBack(const sensor_msgs::Image& view)
             middleCount += (view.data[i] > threshold);
         }
 
-        running_pixel_differences += std::abs(view.data[i] = old_data[i]);
+        running_pixel_differences += std::abs(view.data[i] - old_data[i]);
         // swap!
         old_data[i] = view.data[i];
         //command += "\n";
