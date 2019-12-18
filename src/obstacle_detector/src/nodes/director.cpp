@@ -78,7 +78,7 @@ void dirCallback(const obstacle_detector::Obstacles::ConstPtr& obs) {
   }
 
   if (stop) ss << "cAstomf000f000"; //stop
-  else if (speed) ss << "cCstomf105f105"; //ffwd
+  else if (speed) ss << "cCstomf150f150"; //ffwd --> Fee is changing the spook speed to a higher speed
   else ss << ""; //error
 
   msg.data = ss.str();
