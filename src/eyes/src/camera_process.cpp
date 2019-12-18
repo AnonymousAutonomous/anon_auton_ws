@@ -1,7 +1,6 @@
 #include <iostream>
 #include <chrono> 
 #include <future>
-#include <cstdlib>
 
 #include "ros/ros.h"
 #include "sensor_msgs/Image.h"
@@ -154,7 +153,7 @@ void chatterCallBack(const sensor_msgs::Image& view)
             middleCount += (view.data[i] > threshold);
         }
 
-        running_pixel_differences += std::abs(view.data[i] - old_data[i]);
+        running_pixel_differences += (view.data[i] > old_data[i] ? view.data[i] - old_data[i] : old_data[i] - view.data[i]);
         // swap!
         old_data[i] = view.data[i];
         //command += "\n";
