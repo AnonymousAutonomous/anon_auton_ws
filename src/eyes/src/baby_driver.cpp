@@ -47,7 +47,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
 
     if (command.data[1] == 'A') {
         // old image, increment old image counter
-        if (jimothy.second[2] == 'O') {
+        if (jimothy.second.data[2] == 'O') {
             old_image_counter++;
         }
         else {
