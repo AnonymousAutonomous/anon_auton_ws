@@ -23,7 +23,7 @@ const std::string SLIGHTR       = "cBstomf070f050";
 const std::string SLIGHTL       = "cBstomf050f070";
 const std::string GO            = "cDstomf055f055";
 
-uint8[640 * 480] old_data; // TODO FIXME: switch to imagewidth * imageheight and make those const?
+uint[640 * 480] old_data; // TODO FIXME: switch to imagewidth * imageheight and make those const?
 
 bool data_read = false;
 
