@@ -249,12 +249,16 @@ void chatterCallBack(const sensor_msgs::Image& view)
     d += std::to_string(rightAverage);
     d += " Middle: "; 
     d += std::to_string(middleAverage);
+    d += " Total Pixel Difference: "; 
+    d += std::to_string(running_pixel_differences);
 	d += "\nThreshold: "; 
     d += std::to_string(threshold);
     d += " Top Threshold: "; 
     d += std::to_string(top_percent_threshold);
     d += " Side Threshold: "; 
     d += std::to_string(side_percent_threshold);
+    d += " Not Stuck Threshold: "; 
+    d += std::to_string(not_stuck_threshold);
 
     if (running_pixel_differences < not_stuck_threshold) {
         result[2] = 'O'; // O for old image // TODO FIXME : add to the consts file
