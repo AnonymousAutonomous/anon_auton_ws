@@ -41,7 +41,7 @@ double top_percent_threshold = 0.20;
 bool favorRight = false; 
 double num_middle_pixels = 100800;
 
-const int not_stuck_threshold = 500; 
+const int not_stuck_threshold = 550000; 
 
 void chatterCallBack(const sensor_msgs::Image& view);
 
