@@ -7,10 +7,20 @@
 const std::string BWD =     "cBstomr055r055";
 const std::string PIVOTR =  "cBstomf060r060";
 const std::string PIVOTL =  "cBstomr060f060";
+const std::string FAST_PIVOTR   = "cBstomf100r100"; 
+const std::string FAST_PIVOTL   = "cBstomr100f100";
+
 int counter = 0;
+int old_image_counter = 0;
+
 const int max_elapsed = 11;
+const int lidar_stopped_max_elapsed = 30;
 bool in_bwd = false;
 bool in_pivot = false;
+
+bool in_beep = false;
+bool bwd_after_beep = false;
+
 char pivot_direction = 'r';
 std::string pivot_command = PIVOTR;
 
@@ -36,16 +46,36 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
     //std::stringstream ss;
 
     if (command.data[1] == 'A') {
-            // stop! reset in_bwd
+        // old image, increment old image counter
+        if (jimothy.second[2] == 'O') {
+            old_image_counter++;
+        }
+        else {
+            old_image_counter = 0; // otherwise reset? 
+        }
+        
+        if (old_image_counter > (2 * lidar_stopped_max_elapsed)) {
+            // start moving bwd
+            in_beep = true; 
+            in_bwd = true;
+            in_pivot = false;
+        }
+
+        else if (old_image_counter > lidar_stopped_max_elapsed) {
+            system("aplay ~/anon_auton_ws/src/audio_files/car_horn.wav")
+        }
+
+        else {
             in_bwd = false;
             in_pivot = false;
+            in_beep = false;
+
             counter = 0;
 
             ss << command.data;
         }
-        else {
-            // in the process of moving backward
-            if (in_bwd) {
+
+        if (in_beep && in_bwd) {
                 counter++; 
                 
                 // transition to pivot
@@ -59,42 +89,77 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 else {
                     ss << BWD;
                 }
-            }
-            if (in_pivot) {
-                counter++;
-                ss << pivot_command;
-                // if (pivot_direction == 'r') {
-                //         ss << PIVOTR;
-                //     } else {
-                //         ss << PIVOTL;
-                //     }
-                if (counter > (3 * max_elapsed)) {
-                    counter = 0;
-                    in_bwd = false;
-                    in_pivot = false;
-                }
-            }
-            if (!(in_bwd || in_pivot)) {
-                    // if pivot command - back up and then pivot
-                if (command.data[6] != command.data[10]) {
-                      in_bwd = true;
-                      ss << BWD;     
-                      pivot_command = command.data;
-                      // if (command[6] == 'f') {
-                      //       pivot_direction = 'r';
-                      // }
-                      // else {
-                      //       pivot_direction = 'l';
-                      // } 
-                }
+        }
+        if (in_beep && in_pivot) {
+            counter++;
+            ss << pivot_command;
+            // if (pivot_direction == 'r') {
+            //         ss << PIVOTR;
+            //     } else {
+            //         ss << PIVOTL;
+            //     }
+            // all done, reset!
+            if (counter > (3 * max_elapsed)) {
+                counter = 0;
+                in_bwd = false;
+                in_pivot = false;
+                in_beep = false;
 
-                else {
-                    ss << command.data;
-                }
+                old_image_counter = 0;
+            }
+        }
+    }
 
+    else {
+        // in the process of moving backward
+        if (in_bwd) {
+            counter++; 
+            
+            // transition to pivot
+            if (counter > max_elapsed) {
+                counter = 0;
+                in_bwd = false;
+                in_pivot = true;
             }
             
+            // continue moving backward
+            else {
+                ss << BWD;
+            }
         }
+        if (in_pivot) {
+            counter++;
+            ss << pivot_command;
+            // if (pivot_direction == 'r') {
+            //         ss << PIVOTR;
+            //     } else {
+            //         ss << PIVOTL;
+            //     }
+            if (counter > (3 * max_elapsed)) {
+                counter = 0;
+                in_bwd = false;
+                in_pivot = false;
+            }
+        }
+        if (!(in_bwd || in_pivot)) {
+                // if pivot command - back up and then pivot
+            if (command.data[6] != command.data[10]) {
+                  in_bwd = true;
+                  ss << BWD;     
+                  pivot_command = command.data;
+                  // if (command[6] == 'f') {
+                  //       pivot_direction = 'r';
+                  // }
+                  // else {
+                  //       pivot_direction = 'l';
+                  // } 
+            }
+
+            else {
+                ss << command.data;
+            }
+        }
+    }
 }
 
 void chatterCallBackCamera(const std_msgs::String& commands)
