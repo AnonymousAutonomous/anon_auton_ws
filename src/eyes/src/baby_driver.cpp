@@ -59,11 +59,11 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
             in_beep = true; 
             in_bwd = true;
             in_pivot = false;
-            ss << "BEEEEP" << command.data; 
+            ss << command.data; 
         }
 
         else if (old_image_counter > lidar_stopped_max_elapsed) {
-            ss << "BEEEEP PLAY" << command.data;
+            ss << command.data;
             system("aplay ~/anon_auton_ws/src/audio_files/car_horn.wav");
         }
 
@@ -89,12 +89,12 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 
                 // continue moving backward
                 else {
-                    ss << "BEEP BWD" << BWD;
+                    ss << BWD;
                 }
         }
         if (in_beep && in_pivot) {
             counter++;
-            ss << "BEEP PIVOT" << pivot_command;
+            ss << pivot_command;
             // if (pivot_direction == 'r') {
             //         ss << PIVOTR;
             //     } else {
