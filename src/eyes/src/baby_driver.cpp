@@ -108,7 +108,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 old_image_counter = 0;
 
                 // transition to pivot
-                if (counter > max_elapsed) {
+                if (counter > 5 * max_elapsed) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = true;
@@ -133,7 +133,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 //         ss << PIVOTL;
                 //     }
                 // all done, reset!
-                if (counter > (3 * max_elapsed)) {
+                if (counter > (12 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = false;
@@ -157,14 +157,25 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
         in_beep = false;
         old_image_counter = 0;
         // in the process of moving backward
+
         if (in_bwd) {
             counter++; 
             
             // transition to pivot
-            if (counter > max_elapsed) {
-                counter = 0;
-                in_bwd = false;
-                in_pivot = true;
+            if (in_beep) {
+                if (counter > 5 * max_elapsed) {
+                    counter = 0;
+                    in_bwd = false;
+                    in_pivot = true;
+                    ///ss << " IN PIVOT SET ";
+                }
+            }
+            else {
+                if (counter > max_elapsed) {
+                    counter = 0;
+                    in_bwd = false;
+                    in_pivot = true;
+                }
             }
             
             // continue moving backward
@@ -180,11 +191,25 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
             //     } else {
             //         ss << PIVOTL;
             //     }
-            if (counter > (3 * max_elapsed)) {
-                counter = 0;
-                in_bwd = false;
-                in_pivot = false;
+            if (in_beep) {
+                if (counter > (12 * max_elapsed)) {
+                    counter = 0;
+                    in_bwd = false;
+                    in_pivot = false;
+                    in_beep = false;
+                    //ss << " RESET ALL ";
+
+                    old_image_counter = 0;
+                }
             }
+            else {
+                if (counter > (3 * max_elapsed)) {
+                    counter = 0;
+                    in_bwd = false;
+                    in_pivot = false;
+                }
+            }
+            
         }
         if (!(in_bwd || in_pivot)) {
                 // if pivot command - back up and then pivot
