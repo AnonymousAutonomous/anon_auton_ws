@@ -239,7 +239,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                   in_bwd = true;
                   ss << BWD;     
                   pivot_command = command.data;
-                  if (command[6] == 'f') {
+                  if (command.data[6] == 'f') {
                         pivot_direction = 'r';
                   }
                   else {
