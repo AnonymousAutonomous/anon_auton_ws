@@ -86,7 +86,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
             }
 
             // beep but stay stopped
-            else if (old_image_counter > lidar_stopped_max_elapsed) {
+            else if (old_image_counter == lidar_stopped_max_elapsed) {
                 // ss << command.data;
                 system("aplay ~/anon_auton_ws/src/audio_files/car_horn.wav");
             }
