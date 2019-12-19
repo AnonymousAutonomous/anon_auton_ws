@@ -103,7 +103,8 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
             // move backwards
             if (in_bwd) {
                 ss << " IN BWD ";
-                counter++; 
+                counter++;
+                old_image_counter = 0;
 
                 // transition to pivot
                 if (counter > max_elapsed) {
@@ -124,6 +125,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 ss << " IN PIVOT ";
                 counter++;
                 ss << pivot_command;
+                old_image_counter = 0;
                 // if (pivot_direction == 'r') {
                 //         ss << PIVOTR;
                 //     } else {
