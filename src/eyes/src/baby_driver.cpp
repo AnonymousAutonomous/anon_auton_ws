@@ -14,7 +14,7 @@ int counter = 0;
 int old_image_counter = 0;
 
 const int max_elapsed = 11;
-const int lidar_stopped_max_elapsed = 30;
+const int lidar_stopped_max_elapsed = 10; // todo change me
 bool in_bwd = false;
 bool in_pivot = false;
 
@@ -45,41 +45,60 @@ int main(int argc, char** argv)
 void handleCommand(std_msgs::String& command, std::stringstream& ss) {
     //std::stringstream ss;
 
-    if (command.data[1] == 'A') {
-        // old image, increment old image counter
-        if (jimothy.second.data[2] == 'O') {
-            old_image_counter++;
-        }
-        else {
-            old_image_counter = 0; // otherwise reset? 
-        }
-        
-        if (old_image_counter > (2 * lidar_stopped_max_elapsed)) {
-            // start moving bwd
-            in_beep = true; 
-            in_bwd = true;
-            in_pivot = false;
-            ss << command.data; 
-        }
+    // check jimothy.first.data not just the command when it's passed in
+    if (jimothy.first.data[1] == 'A') {
 
-        else if (old_image_counter > lidar_stopped_max_elapsed) {
-            ss << command.data;
-            system("aplay ~/anon_auton_ws/src/audio_files/car_horn.wav");
-        }
-
-        else {
+        // stop the chair and start in beep
+        if (!in_beep) {
+            // stop! reset in bwd
             in_bwd = false;
             in_pivot = false;
-            in_beep = false;
-
+            in_beep = true
             counter = 0;
 
-            ss << command.data;
+            // keep the chair stopped 
+            ss << jimothy.first.data; // STOP 
         }
 
-        if (in_beep && in_bwd) {
+        // in beep 
+        else {
+            // count old images
+            if (jimothy.second.data[2] == 'O') {
+                old_image_counter++;
+            }
+            else {
+                old_image_counter = 0; // otherwise reset? 
+            }
+
+            // Start moving bwds
+            if (old_image_counter > (2 * lidar_stopped_max_elapsed)) {
+                // start moving bwd
+                //in_beep = true; 
+                in_bwd = true;
+                in_pivot = false;
+                // ss << command.data; 
+            }
+
+            // beep but stay stopped
+            else if (old_image_counter > lidar_stopped_max_elapsed) {
+                // ss << command.data;
+                system("aplay ~/anon_auton_ws/src/audio_files/car_horn.wav");
+            }
+
+            // stay stopped
+            else { // TODO CHECK HERE
+                //in_bwd = false;
+                //in_pivot = false;
+                //in_beep = false;
+
+                counter = 0;
+            }
+
+            // ONLY SET SS VALUES HERE
+            // move backwards
+            if (in_bwd) {
                 counter++; 
-                
+
                 // transition to pivot
                 if (counter > max_elapsed) {
                     counter = 0;
@@ -91,28 +110,38 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 else {
                     ss << BWD;
                 }
-        }
-        if (in_beep && in_pivot) {
-            counter++;
-            ss << pivot_command;
-            // if (pivot_direction == 'r') {
-            //         ss << PIVOTR;
-            //     } else {
-            //         ss << PIVOTL;
-            //     }
-            // all done, reset!
-            if (counter > (3 * max_elapsed)) {
-                counter = 0;
-                in_bwd = false;
-                in_pivot = false;
-                in_beep = false;
+            }
 
-                old_image_counter = 0;
+            // pivot
+            if (in_pivot) {
+                counter++;
+                ss << pivot_command;
+                // if (pivot_direction == 'r') {
+                //         ss << PIVOTR;
+                //     } else {
+                //         ss << PIVOTL;
+                //     }
+                // all done, reset!
+                if (counter > (3 * max_elapsed)) {
+                    counter = 0;
+                    in_bwd = false;
+                    in_pivot = false;
+                    in_beep = false;
+
+                    old_image_counter = 0;
+                }
+            }
+
+            if (!(in_bwd || in_pivot)) {
+                ss << jimothy.first.data; // send STOP still 
             }
         }
     }
 
+    // not stopped so reset in_beep and old_image_counter
     else {
+        in_beep = false;
+        old_image_counter = 0;
         // in the process of moving backward
         if (in_bwd) {
             counter++; 
