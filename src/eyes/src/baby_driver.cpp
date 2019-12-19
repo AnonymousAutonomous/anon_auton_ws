@@ -140,7 +140,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 //         ss << PIVOTL;
                 //     }
                 // all done, reset!
-                if (counter > (5 * max_elapsed)) {
+                if (counter > (12 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = false;
@@ -203,7 +203,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
             //         ss << PIVOTL;
             //     }
             if (in_beep) {
-                if (counter > (5 * max_elapsed)) {
+                if (counter > (12 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = false;
