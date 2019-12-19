@@ -5,6 +5,7 @@
 #include <sstream>
 
 const std::string BWD =     "cBstomr055r055";
+const std::string BWD =     "cBstomr070r070";
 const std::string PIVOTR =  "cBstomf060r060";
 const std::string PIVOTL =  "cBstomr060f060";
 const std::string FAST_PIVOTR   = "cBstomf100r100"; 
@@ -14,7 +15,7 @@ int counter = 0;
 int old_image_counter = 0;
 
 const int max_elapsed = 11;
-const int lidar_stopped_max_elapsed = 10; // todo change me
+const int lidar_stopped_max_elapsed = 100; // todo change me
 bool in_bwd = false;
 bool in_pivot = false;
 
@@ -108,7 +109,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 old_image_counter = 0;
 
                 // transition to pivot
-                if (counter > 5 * max_elapsed) {
+                if (counter > (5 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = true;
@@ -117,7 +118,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 
                 // continue moving backward
                 else {
-                    ss << BWD;
+                    ss << FAST_BWD;
                 }
             }
 
@@ -125,7 +126,13 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
             if (in_pivot) {
                 //ss << " IN PIVOT ";
                 counter++;
-                ss << pivot_command;
+                if (pivot_direction == 'r') {
+                    ss << FAST_PIVOTR;
+                }
+                else {
+                    ss << FAST_PIVOTL;
+                }
+                
                 old_image_counter = 0;
                 // if (pivot_direction == 'r') {
                 //         ss << PIVOTR;
@@ -133,7 +140,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 //         ss << PIVOTL;
                 //     }
                 // all done, reset!
-                if (counter > (12 * max_elapsed)) {
+                if (counter > (36 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = false;
@@ -170,7 +177,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                     ///ss << " IN PIVOT SET ";
                 }
                 else {
-                    ss << BWD;
+                    ss << FAST_BWD;
                 }
             }
             else {
@@ -189,14 +196,14 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
         }
         if (in_pivot) {
             counter++;
-            ss << pivot_command;
+            //ss << pivot_command;
             // if (pivot_direction == 'r') {
             //         ss << PIVOTR;
             //     } else {
             //         ss << PIVOTL;
             //     }
             if (in_beep) {
-                if (counter > (12 * max_elapsed)) {
+                if (counter > (36 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = false;
@@ -205,12 +212,23 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
 
                     old_image_counter = 0;
                 }
+                else {
+                    if (pivot_direction == 'r') {
+                        ss << FAST_PIVOTR;
+                    }
+                    else {
+                        ss << FAST_PIVOTL;
+                    }
+                }
             }
             else {
                 if (counter > (3 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = false;
+                }
+                else {
+                    ss << pivot_command;
                 }
             }
             
@@ -221,12 +239,12 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                   in_bwd = true;
                   ss << BWD;     
                   pivot_command = command.data;
-                  // if (command[6] == 'f') {
-                  //       pivot_direction = 'r';
-                  // }
-                  // else {
-                  //       pivot_direction = 'l';
-                  // } 
+                  if (command[6] == 'f') {
+                        pivot_direction = 'r';
+                  }
+                  else {
+                        pivot_direction = 'l';
+                  } 
             }
 
             else {
