@@ -5,7 +5,7 @@
 #include <sstream>
 
 const std::string BWD =     "cBstomr055r055";
-const std::string BWD =     "cBstomr070r070";
+const std::string FAST_BWD =     "cBstomr070r070";
 const std::string PIVOTR =  "cBstomf060r060";
 const std::string PIVOTL =  "cBstomr060f060";
 const std::string FAST_PIVOTR   = "cBstomf100r100"; 
