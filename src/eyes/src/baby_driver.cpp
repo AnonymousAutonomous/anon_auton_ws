@@ -169,6 +169,9 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                     in_pivot = true;
                     ///ss << " IN PIVOT SET ";
                 }
+                else {
+                    ss << BWD;
+                }
             }
             else {
                 if (counter > max_elapsed) {
@@ -176,12 +179,13 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                     in_bwd = false;
                     in_pivot = true;
                 }
+                else {
+                    ss << BWD;
+                }
             }
             
             // continue moving backward
-            else {
-                ss << BWD;
-            }
+            
         }
         if (in_pivot) {
             counter++;
