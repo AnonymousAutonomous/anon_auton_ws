@@ -161,7 +161,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
     // not stopped so reset in_beep and old_image_counter
     else {
         //ss << " NOT with STOP command ";
-        in_beep = false;
+        // in_beep = false;
         old_image_counter = 0;
         // in the process of moving backward
 
