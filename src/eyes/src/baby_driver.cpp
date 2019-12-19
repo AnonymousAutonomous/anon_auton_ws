@@ -80,6 +80,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 //in_beep = true; 
                 in_bwd = true;
                 in_pivot = false;
+                counter = 0;
                 // ss << command.data; 
                 ss << " IN BWD SET ";
             }
@@ -96,7 +97,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 //in_pivot = false;
                 //in_beep = false;
                 ss << " stay stopped ";
-                counter = 0;
+                //counter = 0;
             }
 
             // ONLY SET SS VALUES HERE
