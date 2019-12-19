@@ -109,7 +109,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 old_image_counter = 0;
 
                 // transition to pivot
-                if (counter > (5 * max_elapsed)) {
+                if (counter > (3 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = true;
@@ -140,7 +140,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 //         ss << PIVOTL;
                 //     }
                 // all done, reset!
-                if (counter > (36 * max_elapsed)) {
+                if (counter > (100 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = false;
@@ -170,7 +170,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
             
             // transition to pivot
             if (in_beep) {
-                if (counter > 5 * max_elapsed) {
+                if (counter > 3 * max_elapsed) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = true;
@@ -203,7 +203,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
             //         ss << PIVOTL;
             //     }
             if (in_beep) {
-                if (counter > (36 * max_elapsed)) {
+                if (counter > (100 * max_elapsed)) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = false;
