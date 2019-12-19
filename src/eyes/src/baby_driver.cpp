@@ -44,14 +44,14 @@ int main(int argc, char** argv)
 
 void handleCommand(std_msgs::String& command, std::stringstream& ss) {
     //std::stringstream ss;
-    ss << jimothy.first.data << " AND " << jimothy.second.data;
+    //ss << jimothy.first.data << " AND " << jimothy.second.data;
 
     // check jimothy.first.data not just the command when it's passed in
     if (jimothy.first.data[1] == 'A') {
-        ss << "I have the STOP command ";
+        //ss << "I have the STOP command ";
         // stop the chair and start in beep
         if (!in_beep) {
-            ss << "NOT in beep";
+            //ss << "NOT in beep";
             // stop! reset in bwd
             in_bwd = false;
             in_pivot = false;
@@ -64,7 +64,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
 
         // in beep 
         else {
-            ss << "IN BEEP";
+            //ss << "IN BEEP";
             // count old images
             if (jimothy.second.data[2] == 'O') {
                 old_image_counter++;
@@ -73,7 +73,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 old_image_counter = 0; // otherwise reset? 
             }
 
-            ss << " OLD IMAGE COUNTER: " << old_image_counter;
+            //ss << " OLD IMAGE COUNTER: " << old_image_counter;
             // Start moving bwds
             if (old_image_counter > (2 * lidar_stopped_max_elapsed)) {
                 // start moving bwd
@@ -82,7 +82,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 in_pivot = false;
                 counter = 0;
                 // ss << command.data; 
-                ss << " IN BWD SET ";
+                //ss << " IN BWD SET ";
             }
 
             // beep but stay stopped
@@ -96,14 +96,14 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                 //in_bwd = false;
                 //in_pivot = false;
                 //in_beep = false;
-                ss << " stay stopped ";
+                //ss << " stay stopped ";
                 //counter = 0;
             }
 
             // ONLY SET SS VALUES HERE
             // move backwards
             if (in_bwd) {
-                ss << " IN BWD ";
+                //ss << " IN BWD ";
                 counter++;
                 old_image_counter = 0;
 
@@ -112,7 +112,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                     counter = 0;
                     in_bwd = false;
                     in_pivot = true;
-                    ss << " IN PIVOT SET ";
+                    ///ss << " IN PIVOT SET ";
                 }
                 
                 // continue moving backward
@@ -123,7 +123,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
 
             // pivot
             if (in_pivot) {
-                ss << " IN PIVOT ";
+                //ss << " IN PIVOT ";
                 counter++;
                 ss << pivot_command;
                 old_image_counter = 0;
@@ -138,14 +138,14 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
                     in_bwd = false;
                     in_pivot = false;
                     in_beep = false;
-                    ss << " RESET ALL ";
+                    //ss << " RESET ALL ";
 
                     old_image_counter = 0;
                 }
             }
 
             if (!(in_bwd || in_pivot)) {
-                ss << " NOT in bwd or pivot ";
+                //ss << " NOT in bwd or pivot ";
                 ss << jimothy.first.data; // send STOP still 
             }
         }
@@ -153,7 +153,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
 
     // not stopped so reset in_beep and old_image_counter
     else {
-        ss << " NOT with STOP command ";
+        //ss << " NOT with STOP command ";
         in_beep = false;
         old_image_counter = 0;
         // in the process of moving backward
