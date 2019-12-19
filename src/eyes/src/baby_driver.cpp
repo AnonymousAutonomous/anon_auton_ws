@@ -55,7 +55,7 @@ void handleCommand(std_msgs::String& command, std::stringstream& ss) {
             // stop! reset in bwd
             in_bwd = false;
             in_pivot = false;
-            in_beep = true
+            in_beep = true;
             counter = 0;
 
             // keep the chair stopped 
