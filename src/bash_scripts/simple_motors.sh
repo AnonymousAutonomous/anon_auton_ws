@@ -16,6 +16,13 @@ done
 pgrep -f "rosout"
 echo "ROSCORE IS RUNNING"
 
+USBS=$((dmesg | grep 'now attached to ttyUSB') | tail -2)
+
+ar=($USBS)
+
+
+echo "${USBS%ttyUSB0*}"
+echo "${USBS%*ttyUSB0}"
 
 ##cd ~/anon_auton_ws
 ##source devel/setup.bash
