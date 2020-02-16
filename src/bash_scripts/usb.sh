@@ -2,6 +2,22 @@
 
 source ~/anon_auton_ws/devel/setup.bash
 
+
+USB0='none'
+USB1='none'
+
+check_usb () {
+
+}
+
+
+assign_usb () {
+
+}
+
+
+
+
 USBS=$(ls -l /dev/serial/by-id)
 
 echo "$USBS"
@@ -9,27 +25,51 @@ echo "$USBS"
 echo "\n --- GOT THE USBS --\n"
 
 
-arr=$(echo $USBS | tr " " "\n")
-
+#arr=$(echo $USBS | tr " " "\n")
+#arr=$USBS
+IFS=' '
+arr=($USBS)
 
 echo "HIIIIII"
 
-$arr[10]
-$arr[12]
+echo $arr
+echo $arr[0]
+echo ${arr[0]}
+echo ${arr[1]}
+echo ${arr[2]}
+echo "HELP?"
 
-$arr[21]
-$arr[23]
 
-for x in $arr
-do 
-    echo "\"$x\""
-done
-# IFS=',/n ' read -r -a array <<< "$USBS[2]"
+# first USB port
+echo ${arr[9]}  # item
+echo ${arr[11]} # port number: ttyUSB0 or ttyUSB1
 
-#for element in "${array[@]}"
-#do
-    echo "NEW ELEMENT $element"
+if [[ ${arr[11]} == *"USB0"* ]]
+then
+    if  [[ ${arr[9]} == "usb-1a86_USB2.0-Serial-if00-port0" ]]
+    then
+        echo "USB0 is ARDUINO"
+    else
+        echo "USB0 is LIDAR"
+    fi
+else 
+    if  [[ ${arr[9]} == "usb-1a86_USB2.0-Serial-if00-port0" ]]
+    then
+        echo "USB1 is ARDUINO"
+    else
+        echo "USB1 is LIDAR"
+    fi
+fi 
+
+# second USB port
+echo ${arr[19]}
+echo ${arr[21]}
+
+#for (( i=0; i<${#arr[@]}; i++ ))
+#do 
+#    echo "$i: ${arr[$i]}"
 #done
+
 
 
 if [[ $USBS == *"USB0"* ]]; then
