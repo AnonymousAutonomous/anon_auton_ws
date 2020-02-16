@@ -6,16 +6,14 @@ source ~/anon_auton_ws/devel/setup.bash
 USB0='none'
 USB1='none'
 
-check_usb () {
+#check_usb () {
 
-}
-
-
-assign_usb () {
-
-}
+#}
 
 
+#assign_usb () {
+
+#
 
 
 USBS=$(ls -l /dev/serial/by-id)
@@ -39,6 +37,8 @@ echo ${arr[1]}
 echo ${arr[2]}
 echo "HELP?"
 
+echo "SIZE OF ARR"
+echo ${#arr[@]}
 
 # first USB port
 echo ${arr[9]}  # item
