@@ -38,7 +38,7 @@ cat > ~/Desktop/simple_motors.desktop <<- EOM
 [Desktop Entry]
 Version=1.0
 Exec=/home/$anonautonN/anon_auton_ws/src/bash_scripts/run/simple_motors.sh
-Icon=/home/$anonautonN/anon_auton_ws/src/bash_scripts/icons/ip.png
+Icon=/home/$anonautonN/anon_auton_ws/src/bash_scripts/icons/gear.png
 Name=Simple Motors
 GenericName=Simple Motors
 Comment=Start roscore, simple motors trigger and listener, connect to Arduino
